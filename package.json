@@ -1,0 +1,46 @@
+{
+  "name": "@gurupras/test-helpers",
+  "version": "0.1.0",
+  "description": "Common test helpers",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "debug:test": "node --inspect-brk node_modules/.bin/jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gurupras/node-test-helpers.git"
+  },
+  "author": "Guru Prasad Srinivasa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gurupras/node-test-helpers/issues"
+  },
+  "homepage": "https://github.com/gurupras/node-test-helpers#readme",
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@types/jest": "^25.2.1",
+    "babel-jest": "^25.4.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^25.4.0",
+    "jest-extended": "^0.11.5"
+  },
+  "dependencies": {
+    "@vue/test-utils": "^1.0.0-beta.33",
+    "deepmerge": "^4.2.2",
+    "emittery": "^0.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "node-rsa": "^1.0.8",
+    "uuid": "^7.0.3",
+    "vue": "^2.6.11",
+    "vue-template-compiler": "^2.6.11"
+  }
+}
