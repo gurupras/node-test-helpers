@@ -1,6 +1,6 @@
 /* global jest */
 const Emittery = require('emittery')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 
 const emitteryWeakMap = new WeakMap()
 
