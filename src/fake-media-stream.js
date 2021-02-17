@@ -83,11 +83,12 @@ class FakeMediaTrack extends FakeDOMNode {
     super()
     const emittery = new Emittery()
     emitteryWeakMap.set(this, emittery)
-    const { kind = Math.random() > 0.5 ? 'video' : 'audio' } = data
+    const { kind = Math.random() > 0.5 ? 'video' : 'audio', enabled = true } = data
     Object.assign(this, {
       id: uuidv4(),
       kind,
-      stop: jest.fn()
+      stop: jest.fn(),
+      enabled
     })
   }
 }
