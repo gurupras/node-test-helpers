@@ -2,39 +2,47 @@
 const Emittery = require('emittery')
 const { v4: uuidv4 } = require('uuid')
 
-const emitteryWeakMap = new WeakMap()
-
 class FakeDOMNode {
+  constructor () {
+    Object.defineProperty(this, 'emittery', {
+      enumerable: false,
+      configurable: false,
+      value: new Emittery()
+    })
+  }
+
   dispatchEvent (evt) {
-    const emitter = emitteryWeakMap.get(this)
-    emitter.emit(evt.type, evt)
+    this.emittery.emit(evt.type, evt)
   }
 
   addEventListener (evt, listener) {
-    const emitter = emitteryWeakMap.get(this)
-    emitter.on(evt, listener)
+    this.emittery.on(evt, listener)
   }
 
   removeEventListener (evt, listener) {
-    const emitter = emitteryWeakMap.get(this)
-    emitter.off(evt, listener)
+    this.emittery.off(evt, listener)
   }
 }
 
 class FakeMediaStream extends FakeDOMNode {
-  constructor (arg, opts = {}) {
+  constructor (arg, opts) {
     super()
-    const { numVideoTracks = 0, numAudioTracks = 0 } = opts
     this.id = uuidv4()
     this.tracks = new Set()
 
     if (arg instanceof FakeMediaStream) {
       arg.getTracks().forEach(t => this.tracks.add(t), this)
-    } else if (arg instanceof Array) {
+    } else if (Array.isArray(arg)) {
       for (const track of arg) {
         this.tracks.add(track)
       }
+    } else if (!!arg && typeof arg === 'object') {
+      // This is an object but not a FakeMediaStream or an array. We're going to assume these are opts
+      opts = arg
     }
+    opts = opts || {}
+    const { numVideoTracks = 0, numAudioTracks = 0 } = opts
+
     if (numVideoTracks > 0) {
       for (let idx = 0; idx < numVideoTracks; idx++) {
         this.addTrack(new FakeMediaTrack({ kind: 'video' }))
@@ -81,21 +89,18 @@ class FakeMediaStream extends FakeDOMNode {
 class FakeMediaTrack extends FakeDOMNode {
   constructor (data = {}) {
     super()
-    const emittery = new Emittery()
-    emitteryWeakMap.set(this, emittery)
     const { kind = Math.random() > 0.5 ? 'video' : 'audio', enabled = true } = data
-    Object.assign(this, {
-      id: uuidv4(),
-      kind,
-      stop: jest.fn(),
-      enabled
-    })
+    this.id = uuidv4()
+    this.kind = kind
+    this.stop = jest.fn()
+    this.enabled = enabled
   }
 }
 
 global.MediaStream = FakeMediaStream
 
 module.exports = {
+  FakeDOMNode,
   FakeMediaStream,
   FakeMediaTrack
 }
