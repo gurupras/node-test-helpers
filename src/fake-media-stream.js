@@ -91,6 +91,15 @@ class FakeMediaTrack extends FakeDOMNode {
     this.stop = jest.fn()
     this.enabled = enabled
   }
+
+  clone () {
+    const data = {
+      ...this,
+      id: uuidv4(),
+      stop: jest.fn()
+    }
+    return new FakeMediaTrack(data)
+  }
 }
 
 global.MediaStream = FakeMediaStream

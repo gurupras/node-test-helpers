@@ -32,6 +32,19 @@ describe('FakeMediaTrack', () => {
       ids.add(track.id)
     }
   })
+  describe('Clone', () => {
+    test('Cloned tracks have different uuid', async () => {
+      const track = new FakeMediaTrack()
+      const clone = track.clone()
+      expect(clone.id).not.toEqual(track.id)
+    })
+    test('Stopping original track does not stop cloned track', async () => {
+      const track = new FakeMediaTrack()
+      const clone = track.clone()
+      track.stop()
+      expect(clone.stop).not.toHaveBeenCalled()
+    })
+  })
 })
 
 describe('FakeMediaStream', () => {
