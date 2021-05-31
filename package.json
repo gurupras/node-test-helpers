@@ -35,8 +35,9 @@
   "dependencies": {
     "@vue/test-utils": "^1.1.0",
     "deepmerge": "^4.2.2",
-    "emittery": "^0.7.1",
+    "emittery": "^0.8.1",
     "jsonwebtoken": "^8.5.1",
+    "mitt": "^2.1.0",
     "moment": "^2.28.0",
     "node-rsa": "^1.1.1",
     "socket.io-client": "^2.3.0",

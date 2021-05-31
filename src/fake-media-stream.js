@@ -1,26 +1,22 @@
 /* global jest */
-const Emittery = require('emittery')
+const mitt = require('mitt')
 const { v4: uuidv4 } = require('uuid')
 
 class FakeDOMNode {
   constructor () {
-    Object.defineProperty(this, 'emittery', {
-      enumerable: false,
-      configurable: false,
-      value: new Emittery()
-    })
+    this.emitter = mitt()
   }
 
   dispatchEvent (evt) {
-    this.emittery.emit(evt.type, evt)
+    this.emitter.emit(evt.type, evt)
   }
 
   addEventListener (evt, listener) {
-    this.emittery.on(evt, listener)
+    this.emitter.on(evt, listener)
   }
 
   removeEventListener (evt, listener) {
-    this.emittery.off(evt, listener)
+    this.emitter.off(evt, listener)
   }
 }
 
