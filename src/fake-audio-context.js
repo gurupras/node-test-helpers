@@ -58,6 +58,7 @@ class FakeAudioContext extends FakeAudioNode {
       addModule: jest.fn()
     }
     this.destination = new FakeAudioNode(new FakeMediaStream())
+    this.close = jest.fn()
   }
 
   createMediaStreamSource (stream) {
