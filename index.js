@@ -1,5 +1,5 @@
 const LocalStorageMock = require('./src/local-storage')
-const FakeAudioContext = require('./src/fake-audio-context')
+const { FakeAudioNode, FakeAudioWorkletNode, FakeAudioContext } = require('./src/fake-audio-context')
 const FakeMedia = require('./src/fake-media-stream')
 const { waitForWatch, commonMount } = require('./src/vue-test-helpers')
 const jwt = require('./src/jwt')
@@ -9,6 +9,8 @@ const socketio = require('./src/socket.io')
 
 module.exports = {
   LocalStorageMock,
+  FakeAudioNode,
+  FakeAudioWorkletNode,
   FakeAudioContext,
   vueWaitForWatch: waitForWatch,
   vueCommonMount: commonMount,
