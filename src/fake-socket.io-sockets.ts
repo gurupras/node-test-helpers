@@ -14,18 +14,18 @@ export class MockSocket {
     this.peer = peer
   }
 
-  on (event: string, callback: EventCallback) {
+  on = vi.fn().mockImplementation((event: string, callback: EventCallback) => {
     if (!this.events.has(event)) {
       this.events.set(event, [])
     }
     this.events.get(event)!.push(callback)
-  }
+  })
 
-  emit (event: string, ...args: any[]) {
+  emit = vi.fn().mockImplementation((event: string, ...args: any[]) => {
     if (this.peer) {
       this.peer._trigger(event, ...args)
     }
-  }
+  })
 
   broadcast = {
     to: vi.fn().mockImplementation((room: string) => ({
