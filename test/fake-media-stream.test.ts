@@ -33,6 +33,34 @@ describe('FakeMediaTrack', () => {
       ids.add(track.id)
     }
   })
+
+  describe('Constructor', () => {
+    test('Can create a video track', () => {
+      const track = new FakeMediaTrack({ kind: 'video' })
+      expect(track.kind).toBe('video')
+    })
+
+    test('Can create an audio track', () => {
+      const track = new FakeMediaTrack({ kind: 'audio' })
+      expect(track.kind).toBe('audio')
+    })
+
+    test('Kind is randomly assigned if not specified', () => {
+      const track = new FakeMediaTrack()
+      expect(['video', 'audio']).toContain(track.kind)
+    })
+
+    test('A track is enabled by default', () => {
+      const track = new FakeMediaTrack()
+      expect(track.enabled).toBe(true)
+    })
+
+    test('Can create a disabled track', () => {
+      const track = new FakeMediaTrack({ enabled: false })
+      expect(track.enabled).toBe(false)
+    })
+  })
+
   describe('Clone', () => {
     test('Cloned tracks have different uuid', async () => {
       const track = new FakeMediaTrack()
@@ -45,6 +73,16 @@ describe('FakeMediaTrack', () => {
       vi.spyOn(clone, 'stop')
       track.stop()
       expect(clone.stop).not.toHaveBeenCalled()
+    })
+    test('Cloned track has same kind', async () => {
+      const track = new FakeMediaTrack({ kind: 'video' })
+      const clone = track.clone()
+      expect(clone.kind).toBe('video')
+    })
+    test('Cloned track has same enabled status', async () => {
+      const track = new FakeMediaTrack({ enabled: false })
+      const clone = track.clone()
+      expect(clone.enabled).toBe(false)
     })
   })
 })

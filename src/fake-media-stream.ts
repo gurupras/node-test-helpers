@@ -11,8 +11,9 @@ export class FakeDOMNode {
     this.emitter = mitt()
   }
 
-  dispatchEvent (evt: Event) {
+  dispatchEvent (evt: Event): boolean {
     this.emitter.emit(evt.type, evt)
+    return true
   }
 
   addEventListener (evt: string, listener: (event: Event) => void) {
@@ -29,28 +30,40 @@ interface FakeMediaTrackData {
   enabled?: boolean;
 }
 
-export class FakeMediaTrack extends FakeDOMNode {
-  id: string
-  kind: 'video' | 'audio'
-  stop: ReturnType<typeof vi.fn>
+export class FakeMediaTrack extends FakeDOMNode implements MediaStreamTrack {
+  readonly id: string
+  readonly kind: 'video' | 'audio'
+  readonly label = ''
+  readonly contentHint = ''
+  readonly muted = false
+  readonly readyState: MediaStreamTrackState = 'live'
   enabled: boolean
+
+  onended: ((this: MediaStreamTrack, ev: Event) => any) | null = null
+  onmute: ((this: MediaStreamTrack, ev: Event) => any) | null = null
+  onunmute: ((this: MediaStreamTrack, ev: Event) => any) | null = null
+  onoverconstrained: ((this: MediaStreamTrack, ev: Event) => any) | null = null
+
+  stop = vi.fn()
+  applyConstraints = vi.fn().mockResolvedValue(undefined)
+  getCapabilities = vi.fn().mockReturnValue({})
+  getConstraints = vi.fn().mockReturnValue({})
+  getSettings = vi.fn().mockReturnValue({})
 
   constructor (data: FakeMediaTrackData = {}) {
     super()
     const { kind = Math.random() > 0.5 ? 'video' : 'audio', enabled = true } = data
     this.id = uuidv4()
     this.kind = kind
-    this.stop = vi.fn()
     this.enabled = enabled
   }
 
-  clone (): FakeMediaTrack {
-    const data = {
-      ...this,
-      id: uuidv4(),
-      stop: vi.fn(),
-    }
-    return new FakeMediaTrack(data)
+  clone (): MediaStreamTrack {
+    const cloned = new FakeMediaTrack({
+      kind: this.kind,
+      enabled: this.enabled,
+    })
+    return cloned
   }
 }
 
