@@ -1,41 +1,41 @@
-type EventCallback = (...args: any[]) => void;
+type EventCallback = (...args: any[]) => void
 
-class MockSocket {
-  private events = new Map<string, EventCallback[]>();
+export class MockSocket {
+  private events = new Map<string, EventCallback[]>()
 
-  constructor(private peer?: MockSocket) {}
+  constructor (private peer?: MockSocket) {}
 
-  setPeer(peer: MockSocket) {
-    this.peer = peer;
+  setPeer (peer: MockSocket) {
+    this.peer = peer
   }
 
-  on(event: string, callback: EventCallback) {
+  on (event: string, callback: EventCallback) {
     if (!this.events.has(event)) {
-      this.events.set(event, []);
+      this.events.set(event, [])
     }
-    this.events.get(event)!.push(callback);
+    this.events.get(event)!.push(callback)
   }
 
-  emit(event: string, ...args: any[]) {
+  emit (event: string, ...args: any[]) {
     if (this.peer) {
-      this.peer.trigger(event, ...args);
+      this.peer._trigger(event, ...args)
     }
   }
 
-  private trigger(event: string, ...args: any[]) {
-    const callbacks = this.events.get(event) || [];
-    callbacks.forEach(cb => cb(...args));
+  _trigger (event: string, ...args: any[]) {
+    const callbacks = this.events.get(event) || []
+    callbacks.forEach(cb => cb(...args))
   }
 
   // Optional: simulate `disconnect`, `connect`, etc.
 }
 
-export function createMockSocketPair(): { serverSocket: MockSocket; clientSocket: MockSocket } {
-  const serverSocket = new MockSocket();
-  const clientSocket = new MockSocket();
+export function createMockSocketPair (): { serverSocket: MockSocket; clientSocket: MockSocket } {
+  const serverSocket = new MockSocket()
+  const clientSocket = new MockSocket()
 
-  serverSocket.setPeer(clientSocket);
-  clientSocket.setPeer(serverSocket);
+  serverSocket.setPeer(clientSocket)
+  clientSocket.setPeer(serverSocket)
 
-  return { serverSocket, clientSocket };
+  return { serverSocket, clientSocket }
 }

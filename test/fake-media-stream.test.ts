@@ -1,8 +1,8 @@
-const { FakeDOMNode, FakeMediaTrack, FakeMediaStream } = require('../src/fake-media-stream')
+import { describe, test, expect, beforeEach, vi } from 'vitest'
+import { FakeDOMNode, FakeMediaTrack, FakeMediaStream } from '../src/fake-media-stream.js'
 
 describe('FakeDOMNode', () => {
-  /** @type {FakeDOMNode} */
-  let node
+  let node: FakeDOMNode
   beforeEach(() => {
     node = new FakeDOMNode()
   })
@@ -17,8 +17,9 @@ describe('FakeDOMNode', () => {
   })
   test('Able to emit events and have event listeners be triggered', async () => {
     const promise = new Promise(resolve => node.addEventListener('test', resolve))
-    node.dispatchEvent({ type: 'test' })
-    await expect(promise).toResolve()
+    const evt = { type: 'test' }
+    node.dispatchEvent(evt)
+    await expect(promise).resolves.toEqual(evt)
   })
 })
 
@@ -27,8 +28,8 @@ describe('FakeMediaTrack', () => {
     const ids = new Set()
     for (let idx = 0; idx < 100; idx++) {
       const track = new FakeMediaTrack()
-      expect(track.id).toBeString()
-      expect(ids.has(track.id)).toBeFalse()
+      expect(typeof track.id).toBe('string')
+      expect(ids.has(track.id)).toBe(false)
       ids.add(track.id)
     }
   })
@@ -41,6 +42,7 @@ describe('FakeMediaTrack', () => {
     test('Stopping original track does not stop cloned track', async () => {
       const track = new FakeMediaTrack()
       const clone = track.clone()
+      vi.spyOn(clone, 'stop')
       track.stop()
       expect(clone.stop).not.toHaveBeenCalled()
     })
@@ -50,23 +52,23 @@ describe('FakeMediaTrack', () => {
 describe('FakeMediaStream', () => {
   test('Always has an id', async () => {
     const stream = new FakeMediaStream()
-    expect(stream.id).toBeString()
+    expect(typeof stream.id).toBe('string')
   })
   test('Able to create an empty stream', async () => {
     const stream = new FakeMediaStream()
     expect(stream.getTracks().length).toEqual(0)
   })
   test('Able to copy streams by specifying first argument', () => {
-    const stream1 = new FakeMediaStream(null, { numVideoTracks: 3, numAudioTracks: 3 })
+    const stream1 = new FakeMediaStream(undefined, { numVideoTracks: 3, numAudioTracks: 3 })
     const stream2 = new FakeMediaStream(stream1)
     expect(stream2.getVideoTracks().length).toEqual(stream1.getVideoTracks().length)
     expect(stream2.getAudioTracks().length).toEqual(stream1.getAudioTracks().length)
-    expect(stream2.getTracks()).toIncludeSameMembers(stream1.getTracks())
+    expect(stream2.getTracks()).toEqual(expect.arrayContaining(stream1.getTracks()))
   })
   test('Able to copy tracks by specifying an array in the first argument', () => {
     const tracks = [...Array(5)].map(x => new FakeMediaTrack())
     const stream = new FakeMediaStream(tracks)
-    expect(stream.getTracks()).toIncludeSameMembers(tracks)
+    expect(stream.getTracks()).toEqual(expect.arrayContaining(tracks))
   })
   test('Specifying an object in the first argument with numVideoTracks and numAudioTracks treats it as opts', async () => {
     const stream = new FakeMediaStream({ numVideoTracks: 3, numAudioTracks: 3 })
@@ -78,7 +80,7 @@ describe('FakeMediaStream', () => {
     const stream = new FakeMediaStream()
     const track = new FakeMediaTrack()
     stream.addTrack(track)
-    expect(stream.getTracks()).toIncludeSameMembers([track])
+    expect(stream.getTracks()).toEqual(expect.arrayContaining([track]))
   })
   test('Able to remove track', async () => {
     const tracks = [...Array(5)].map(x => new FakeMediaTrack())
@@ -87,7 +89,7 @@ describe('FakeMediaStream', () => {
     expect(() => stream.removeTrack(trackToRemove)).not.toThrow()
     const expected = [...tracks]
     expected.splice(tracks.indexOf(trackToRemove), 1)
-    expect(stream.getTracks()).toIncludeSameMembers(expected)
+    expect(stream.getTracks()).toEqual(expect.arrayContaining(expected))
   })
 
   test('Able to create a fake stream by just specifying numVideoTracks', async () => {
@@ -102,15 +104,17 @@ describe('FakeMediaStream', () => {
   test('Able to set up onaddtrack and have it trigger', async () => {
     const stream = new FakeMediaStream()
     const promise = new Promise(resolve => { stream.onaddtrack = resolve })
-    stream.addTrack(new FakeMediaTrack())
-    await expect(promise).toResolve()
+    const track = new FakeMediaTrack()
+    stream.addTrack(track)
+    await expect(promise).resolves.toEqual({ track })
   })
 
   test('Able to set up onremovetrack and have it trigger', async () => {
     const stream = new FakeMediaStream()
-    stream.addTrack(new FakeMediaTrack())
+    const track = new FakeMediaTrack()
+    stream.addTrack(track)
     const promise = new Promise(resolve => { stream.onremovetrack = resolve })
-    stream.removeTrack(stream.getTracks()[0])
-    await expect(promise).toResolve()
+    stream.removeTrack(track)
+    await expect(promise).resolves.toEqual({ track })
   })
 })
