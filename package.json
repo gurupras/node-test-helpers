@@ -1,6 +1,6 @@
 {
   "name": "@gurupras/test-helpers",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Common test helpers",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

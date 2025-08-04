@@ -53,4 +53,43 @@ describe('MockSocket', () => {
     serverSocket.emit('test-event', 'arg1', 'arg2', { id: 1 })
     expect(callback).toHaveBeenCalledWith('arg1', 'arg2', { id: 1 })
   })
+
+  describe('removeAllListeners', () => {
+    test('should remove all listeners for a specific event', () => {
+      const socket = new MockSocket()
+      const callback1 = vi.fn()
+      const callback2 = vi.fn()
+      const callback3 = vi.fn()
+
+      socket.on('event1', callback1)
+      socket.on('event1', callback2)
+      socket.on('event2', callback3)
+
+      socket.removeAllListeners('event1')
+
+      socket._trigger('event1', 'data')
+      socket._trigger('event2', 'data')
+
+      expect(callback1).not.toHaveBeenCalled()
+      expect(callback2).not.toHaveBeenCalled()
+      expect(callback3).toHaveBeenCalledWith('data')
+    })
+
+    test('should remove all listeners for all events if no event is specified', () => {
+      const socket = new MockSocket()
+      const callback1 = vi.fn()
+      const callback2 = vi.fn()
+
+      socket.on('event1', callback1)
+      socket.on('event2', callback2)
+
+      socket.removeAllListeners()
+
+      socket._trigger('event1', 'data')
+      socket._trigger('event2', 'data')
+
+      expect(callback1).not.toHaveBeenCalled()
+      expect(callback2).not.toHaveBeenCalled()
+    })
+  })
 })

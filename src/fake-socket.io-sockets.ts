@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 type EventCallback = (...args: any[]) => void
 
 export class MockSocket {
@@ -26,6 +28,14 @@ export class MockSocket {
     const callbacks = this.events.get(event) || []
     callbacks.forEach(cb => cb(...args))
   }
+
+  removeAllListeners = vi.fn().mockImplementation((event?: string) => {
+    if (event) {
+      this.events.delete(event)
+    } else {
+      this.events.clear()
+    }
+  })
 
   // Optional: simulate `disconnect`, `connect`, etc.
 }
