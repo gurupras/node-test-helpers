@@ -88,21 +88,21 @@ export class FakeAudioContext extends FakeAudioNode {
     this.close = vi.fn()
   }
 
-  createMediaStreamSource (stream: FakeMediaStream): FakeAudioNode {
+  createMediaStreamSource = vi.fn().mockImplementation((stream: FakeMediaStream): FakeAudioNode => {
     return new FakeAudioNode(stream)
-  }
+  })
 
-  createMediaStreamDestination (): { stream: FakeMediaStream } {
+  createMediaStreamDestination = vi.fn().mockImplementation(() => {
     return {
       stream: new FakeMediaStream(),
     }
-  }
+  })
 
-  createGain (): FakeAudioNode {
+  createGain = vi.fn().mockImplementation(() => {
     const node = new FakeAudioNode()
     node.gain = {
       value: 1.0,
     }
     return node
-  }
+  })
 }
