@@ -6,6 +6,7 @@ const jwt = require('./src/jwt')
 const events = require('./src/events')
 const random = require('./src/random')
 const socketio = require('./src/socket.io')
+const { createMockSocketPair } = require('./src/fake-socket.io-sockets.js')
 
 module.exports = {
   LocalStorageMock,
@@ -18,5 +19,6 @@ module.exports = {
   ...jwt,
   ...events,
   ...random,
-  ...socketio
+  ...socketio,
+  createMockSocketPair
 }
