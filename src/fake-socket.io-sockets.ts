@@ -28,16 +28,16 @@ export class MockSocket {
   }
 
   broadcast = {
-    to: (room: string) => ({
-      emit: (event: string, ...args: any[]) => {
+    to: vi.fn().mockImplementation((room: string) => ({
+      emit: vi.fn().mockImplementation((event: string, ...args: any[]) => {
         if (this.socketCollection) {
           const targetSocket = this.socketCollection.get(room)
           if (targetSocket) {
             targetSocket._trigger(event, ...args)
           }
         }
-      }
-    })
+      })
+    }))
   }
 
   _trigger (event: string, ...args: any[]) {
