@@ -54,6 +54,52 @@ describe('MockSocket', () => {
     expect(callback).toHaveBeenCalledWith('arg1', 'arg2', { id: 1 })
   })
 
+  test('socket.id should exist and be a string', () => {
+    const socket = new MockSocket()
+    expect(typeof socket.id).toBe('string')
+    expect(socket.id.length).toBeGreaterThan(0)
+  })
+
+  describe('broadcast.to', () => {
+    test('should emit to a specific socket by id', () => {
+      const socketCollection = new Map()
+      const socket1 = new MockSocket(undefined, socketCollection)
+      const socket2 = new MockSocket(undefined, socketCollection)
+      const socket3 = new MockSocket(undefined, socketCollection)
+
+      socketCollection.set(socket1.id, socket1)
+      socketCollection.set(socket2.id, socket2)
+      socketCollection.set(socket3.id, socket3)
+
+      const callback1 = vi.fn()
+      const callback2 = vi.fn()
+      const callback3 = vi.fn()
+
+      socket1.on('message', callback1)
+      socket2.on('message', callback2)
+      socket3.on('message', callback3)
+
+      socket1.broadcast.to(socket2.id).emit('message', 'hello socket2')
+
+      expect(callback1).not.toHaveBeenCalled()
+      expect(callback2).toHaveBeenCalledWith('hello socket2')
+      expect(callback3).not.toHaveBeenCalled()
+    })
+
+    test('should not emit if the target socket does not exist', () => {
+      const socketCollection = new Map()
+      const socket1 = new MockSocket(undefined, socketCollection)
+      socketCollection.set(socket1.id, socket1)
+
+      const callback1 = vi.fn()
+      socket1.on('message', callback1)
+
+      socket1.broadcast.to('nonExistentSocketId').emit('message', 'hello')
+
+      expect(callback1).not.toHaveBeenCalled()
+    })
+  })
+
   describe('removeAllListeners', () => {
     test('should remove all listeners for a specific event', () => {
       const socket = new MockSocket()
