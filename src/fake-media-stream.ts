@@ -59,11 +59,10 @@ export class FakeMediaTrack extends FakeDOMNode implements MediaStreamTrack {
   }
 
   clone (): MediaStreamTrack {
-    const cloned = new FakeMediaTrack({
+    return new FakeMediaTrack({
       kind: this.kind,
       enabled: this.enabled,
     })
-    return cloned
   }
 }
 
@@ -72,70 +71,70 @@ interface FakeMediaStreamOptions {
   numAudioTracks?: number;
 }
 
-export class FakeMediaStream extends FakeDOMNode {
+export class FakeMediaStream extends FakeDOMNode implements MediaStream {
   id: string
   tracks: Set<FakeMediaTrack>
-  onaddtrack?: (event: { track: FakeMediaTrack }) => void
-  onremovetrack?: (event: { track: FakeMediaTrack }) => void
+  active = true
+  onaddtrack: ((this: MediaStream, ev: MediaStreamTrackEvent) => any) | null = null
+  onremovetrack: ((this: MediaStream, ev: MediaStreamTrackEvent) => any) | null = null
 
-  constructor (arg?: FakeMediaStream | FakeMediaTrack[] | FakeMediaStreamOptions, opts?: FakeMediaStreamOptions) {
+  constructor (
+    arg?: FakeMediaStream | FakeMediaTrack[] | FakeMediaStreamOptions,
+    opts?: FakeMediaStreamOptions
+  ) {
     super()
     this.id = uuidv4()
     this.tracks = new Set()
 
-    if (arg instanceof FakeMediaStream) {
-      arg.getTracks().forEach(t => this.tracks.add(t), this)
+    if (typeof (arg as any)?.getTracks === 'function') {
+      (arg as FakeMediaStream).getTracks().forEach(t => this.tracks.add(t))
     } else if (Array.isArray(arg)) {
       for (const track of arg) {
-        this.tracks.add(track as FakeMediaTrack)
+        this.tracks.add(track)
       }
     } else if (!!arg && typeof arg === 'object') {
       opts = arg as FakeMediaStreamOptions
     }
+
     opts = opts || {}
     const { numVideoTracks = 0, numAudioTracks = 0 } = opts
 
-    if (numVideoTracks > 0) {
-      for (let idx = 0; idx < numVideoTracks; idx++) {
-        this.addTrack(new FakeMediaTrack({ kind: 'video' }))
-      }
+    for (let i = 0; i < numVideoTracks; i++) {
+      this.addTrack(new FakeMediaTrack({ kind: 'video' }))
     }
-    if (numAudioTracks > 0) {
-      for (let idx = 0; idx < numAudioTracks; idx++) {
-        this.addTrack(new FakeMediaTrack({ kind: 'audio' }))
-      }
+
+    for (let i = 0; i < numAudioTracks; i++) {
+      this.addTrack(new FakeMediaTrack({ kind: 'audio' }))
     }
   }
 
-  addTrack (track: FakeMediaTrack) {
+  getTracks = vi.fn(() => [...this.tracks])
+  getAudioTracks = vi.fn(() => [...this.tracks].filter(t => t.kind === 'audio'))
+  getVideoTracks = vi.fn(() => [...this.tracks].filter(t => t.kind === 'video'))
+
+  getTrackById = vi.fn((id: string) => {
+    return [...this.tracks].find(t => t.id === id) || null
+  })
+
+  addTrack = vi.fn((track: FakeMediaTrack) => {
     this.tracks.add(track)
     if (this.onaddtrack) {
-      this.onaddtrack({ track })
+      const event = { track } as unknown as MediaStreamTrackEvent
+      this.onaddtrack(event)
     }
-  }
+  })
 
-  removeTrack (track: FakeMediaTrack) {
+  removeTrack = vi.fn((track: FakeMediaTrack) => {
     this.tracks.delete(track)
     if (this.onremovetrack) {
-      this.onremovetrack({ track })
+      const event = { track } as unknown as MediaStreamTrackEvent
+      this.onremovetrack(event)
     }
-  }
+  })
 
-  getTracks (): FakeMediaTrack[] {
-    return [...this.tracks]
-  }
-
-  private _getFilteredTracks (kind: 'video' | 'audio'): FakeMediaTrack[] {
-    return [...this.tracks].filter(x => x.kind === kind)
-  }
-
-  getVideoTracks (): FakeMediaTrack[] {
-    return this._getFilteredTracks('video')
-  }
-
-  getAudioTracks (): FakeMediaTrack[] {
-    return this._getFilteredTracks('audio')
-  }
+  clone = vi.fn(() => {
+    return new FakeMediaStream(this)
+  })
 }
 
 (global as any).MediaStream = FakeMediaStream

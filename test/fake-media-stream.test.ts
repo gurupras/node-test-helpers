@@ -155,4 +155,31 @@ describe('FakeMediaStream', () => {
     stream.removeTrack(track)
     await expect(promise).resolves.toEqual({ track })
   })
+
+  describe('getTrackById', () => {
+    test('Able to get track by id', async () => {
+      const tracks = [...Array(5)].map(x => new FakeMediaTrack())
+      const stream = new FakeMediaStream(tracks)
+      const track = tracks[2]
+      expect(stream.getTrackById(track.id)).toEqual(track)
+    })
+    test('Returns null if track is not found', async () => {
+      const stream = new FakeMediaStream()
+      expect(stream.getTrackById('some-id')).toBeNull()
+    })
+  })
+
+  describe('clone', () => {
+    test('Cloned stream has same tracks', async () => {
+      const tracks = [...Array(5)].map(x => new FakeMediaTrack())
+      const stream = new FakeMediaStream(tracks)
+      const clone = stream.clone()
+      expect(clone.getTracks()).toEqual(expect.arrayContaining(tracks))
+    })
+    test('Cloned stream has different id', async () => {
+      const stream = new FakeMediaStream()
+      const clone = stream.clone()
+      expect(clone.id).not.toEqual(stream.id)
+    })
+  })
 })
