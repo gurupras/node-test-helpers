@@ -1,6 +1,6 @@
 {
   "name": "@gurupras/test-helpers",
-  "version": "0.7.7",
+  "version": "0.8.0",
   "description": "Common test helpers",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "debug:test": "vitest --inspect-brk"
   },
   "repository": {
@@ -25,24 +25,24 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node-rsa": "^1.1.4",
     "@types/socket.io-client": "^1.4.36",
-    "@vitest/coverage-v8": "^3.2.4",
-    "eslint": "^9.32.0",
+    "@vitest/coverage-v8": "^4.0.14",
+    "eslint": "^9.39.1",
     "neostandard": "^0.12.2",
-    "typescript": "^5.9.2",
-    "vite": "^7.0.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.14"
   },
   "dependencies": {
     "@vue/test-utils": "^1.1.0",
-    "deepmerge": "^4.2.2",
+    "deepmerge": "^4.3.1",
     "emittery": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
     "mitt": "^3.0.1",
-    "moment": "^2.28.0",
+    "moment": "^2.30.1",
     "node-rsa": "^1.1.1",
     "socket.io-client": "^2.3.0",
-    "uuid": "^11.1.0",
+    "uuid": "^13.0.0",
     "vue": "^2.6.12",
     "vue-template-compiler": "^2.6.12"
   },

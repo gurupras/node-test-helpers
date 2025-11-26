@@ -8,7 +8,7 @@ export class FakeDOMNode {
   private emitter: Emitter<Record<string, Event>>
 
   constructor () {
-    this.emitter = mitt()
+    this.emitter = (mitt as any)()
   }
 
   dispatchEvent (evt: Event): boolean {
@@ -108,33 +108,33 @@ export class FakeMediaStream extends FakeDOMNode implements MediaStream {
     }
   }
 
-  getTracks = vi.fn(() => [...this.tracks])
-  getAudioTracks = vi.fn(() => [...this.tracks].filter(t => t.kind === 'audio'))
-  getVideoTracks = vi.fn(() => [...this.tracks].filter(t => t.kind === 'video'))
+  getTracks = () => [...this.tracks]
+  getAudioTracks = () => [...this.tracks].filter(t => t.kind === 'audio')
+  getVideoTracks = () => [...this.tracks].filter(t => t.kind === 'video')
 
-  getTrackById = vi.fn((id: string) => {
+  getTrackById = (id: string) => {
     return [...this.tracks].find(t => t.id === id) || null
-  })
+  }
 
-  addTrack = vi.fn((track: FakeMediaTrack) => {
+  addTrack = (track: FakeMediaTrack) => {
     this.tracks.add(track)
     if (this.onaddtrack) {
       const event = { track } as unknown as MediaStreamTrackEvent
       this.onaddtrack(event)
     }
-  })
+  }
 
-  removeTrack = vi.fn((track: FakeMediaTrack) => {
+  removeTrack = (track: FakeMediaTrack) => {
     this.tracks.delete(track)
     if (this.onremovetrack) {
       const event = { track } as unknown as MediaStreamTrackEvent
       this.onremovetrack(event)
     }
-  })
+  }
 
-  clone = vi.fn(() => {
+  clone = () => {
     return new FakeMediaStream(this)
-  })
+  }
 }
 
 (global as any).MediaStream = FakeMediaStream
