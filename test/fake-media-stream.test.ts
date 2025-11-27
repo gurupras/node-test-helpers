@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest'
-import { FakeDOMNode, FakeMediaTrack, FakeMediaStream } from '../src/fake-media-stream.js'
+import { FakeDOMNode, FakeMediaTrack, FakeMediaStream, assignGlobals } from '../src/fake-media-stream.js'
 
 describe('FakeDOMNode', () => {
   let node: FakeDOMNode
@@ -180,6 +180,14 @@ describe('FakeMediaStream', () => {
       const stream = new FakeMediaStream()
       const clone = stream.clone()
       expect(clone.id).not.toEqual(stream.id)
+    })
+  })
+
+  describe('assignGlobals', () => {
+    test('Assigns globals', () => {
+      expect(global.MediaStream).toBeUndefined()
+      assignGlobals()
+      expect(global.MediaStream).toBe(FakeMediaStream)
     })
   })
 })

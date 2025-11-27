@@ -145,4 +145,6 @@ export class FakeMediaStream extends FakeDOMNode implements MediaStream {
   }
 }
 
-(global as any).MediaStream = FakeMediaStream
+export function assignGlobals () {
+  vi.stubGlobal('MediaStream', FakeMediaStream)
+}
