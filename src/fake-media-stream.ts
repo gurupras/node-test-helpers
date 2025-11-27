@@ -108,15 +108,23 @@ export class FakeMediaStream extends FakeDOMNode implements MediaStream {
     }
   }
 
-  getTracks = () => [...this.tracks]
-  getAudioTracks = () => [...this.tracks].filter(t => t.kind === 'audio')
-  getVideoTracks = () => [...this.tracks].filter(t => t.kind === 'video')
+  getTracks () {
+    return [...this.tracks]
+  }
 
-  getTrackById = (id: string) => {
+  getAudioTracks () {
+    return [...this.tracks].filter(t => t.kind === 'audio')
+  }
+
+  getVideoTracks () {
+    return [...this.tracks].filter(t => t.kind === 'video')
+  }
+
+  getTrackById (id: string) {
     return [...this.tracks].find(t => t.id === id) || null
   }
 
-  addTrack = (track: FakeMediaTrack) => {
+  addTrack (track: FakeMediaTrack) {
     this.tracks.add(track)
     if (this.onaddtrack) {
       const event = { track } as unknown as MediaStreamTrackEvent
@@ -132,7 +140,7 @@ export class FakeMediaStream extends FakeDOMNode implements MediaStream {
     }
   }
 
-  clone = () => {
+  clone () {
     return new FakeMediaStream(this)
   }
 }
